@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huephoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-image: url("abstract-multi-colored-illustration-vibrant-fractal-shapes-generated-by-ai.jpg");
+            background-size: cover;
+            background-position: center;
+            color: #333;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            opacity: 95%;
+            width: 100%;
+        }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 4rem;
+            color: #4a4a4a;
+            margin-bottom: 10px;
+        }
+        .how-it-works, .how-to-use {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .how-it-works h2, .how-to-use h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+        .how-it-works ul, .how-to-use ol {
+            padding-left: 20px;
+        }
+        .how-it-works li, .how-to-use li {
+            margin-bottom: 10px;
+        }
+        #try-this-btn, #colorize-btn, #download-btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+        #try-this-btn:hover, #colorize-btn:hover, #download-btn:hover {
+            background-color: #45a049;
+        }
+        #upload-container {
+            width: 100%;
+            height: 200px;
+            border: 3px dashed #aaa;
+            border-radius: 10px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        #upload-container:hover {
+            background-color: #f0f0f0;
+        }
+        #upload-container.dragover {
+            background-color: #e1e1e1;
+            border-color: #4CAF50;
+        }
+        #colorize-btn, #download-btn {
+            display: none;
+        }
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+        .social-share {
+            margin-top: 20px;
+        }
+        .social-share a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #333;
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+        .social-share a:hover {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Huephoria</h1>
+        <div class="how-it-works">
+            <h2>How It Works</h2>
+            <ul>
+                <li><strong>Input & Output:</strong> pix2pix GANs take grayscale images as input and generate corresponding colorized images as output.</li>
+                <li><strong>Conditional GAN:</strong> This GAN is conditioned on the input image, meaning the generator learns to add color based on the grayscale image content.</li>
+                <li><strong>Training:</strong> The generator and discriminator are trained together, where the generator tries to create realistic color images, and the discriminator distinguishes between real and colorized images.</li>
+                <li><strong>Loss Functions:</strong> Uses a combination of L1 loss (pixel-wise difference) and adversarial loss to ensure the generated images are both accurate and realistic.</li>
+            </ul>
+        </div>
+        <button id="try-this-btn">Try This</button>
+        <div class="how-to-use" style="display: none;">
+            <h2>How to Use This</h2>
+            <ol>
+                <li><strong>Upload Image:</strong> Click "Upload Image" and select your grayscale image.</li>
+                <li><strong>Colorize Image:</strong> Click "Colorize Image" to apply the colorization.</li>
+                <li><strong>Download Image:</strong> Click "Download Image" to save the colorized image to your device.</li>
+            </ol>
+        </div>
+        <div id="upload-container">
+            <p>Drag and drop or click to upload an image</p>
+            <input type="file" id="file-input" accept="image/*" style="display: none;">
+        </div>
+        <button id="colorize-btn">Colorize Image</button>
+        <button id="download-btn">Download Image</button>
+        <img id="preview" src="" alt="Uploaded image preview">
+        <div class="social-share">
+            <a href="https://x.com/Shantnupsph" id="twitter-share" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="https://github.com/Shantnu-singh" id="github-share" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/shantnu-singh-70400a22b/" id="linkedin-share" target="_blank"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </div>
+    <script>
+        const tryThisBtn = document.getElementById('try-this-btn');
+        const howItWorks = document.querySelector('.how-it-works');
+        const howToUse = document.querySelector('.how-to-use');
+        const uploadContainer = document.getElementById('upload-container');
+        const fileInput = document.getElementById('file-input');
+        const colorizeBtn = document.getElementById('colorize-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const preview = document.getElementById('preview');
+        const twitterShare = document.getElementById('twitter-share');
+        const githubShare = document.getElementById('github-share');
+        const linkedinShare = document.getElementById('linkedin-share');
+    
+        tryThisBtn.addEventListener('click', () => {
+            howItWorks.style.display = 'none';
+            howToUse.style.display = 'block';
+            uploadContainer.style.display = 'flex';
+            tryThisBtn.style.display = 'none';
+        });
+    
+        uploadContainer.addEventListener('click', () => fileInput.click());
+        uploadContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadContainer.classList.add('dragover');
+        });
+        uploadContainer.addEventListener('dragleave', () => {
+            uploadContainer.classList.remove('dragover');
+        });
+        uploadContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadContainer.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+    
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+    
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        colorizeBtn.style.display = 'inline-block';
+                        downloadBtn.style.display = 'inline-block';
+                        updateShareLinks(e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Please upload an image file.');
+                }
+            }
+        }
+    
+        colorizeBtn.addEventListener('click', () => {
+            // alert 
+            alert('the original image remains unchanged.as colorise model is not intgerted right now');
+        });
+    
+        downloadBtn.addEventListener('click', () => {
+            // Create a temporary anchor element
+            const downloadLink = document.createElement('a');
+            downloadLink.href = preview.src;
+            downloadLink.download = 'huephoria_image.png';
+    
+            // Programmatically click the link to trigger the download
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        });
+    
+        function updateShareLinks(imageUrl) {
+            const shareUrl = encodeURIComponent(window.location.href);
+            const shareTitle = encodeURIComponent('Check out my image on Huephoria!');
+            const shareImage = encodeURIComponent(imageUrl);
+    
+            twitterShare.href = `https://x.com/Shantnupsph`;
+            githubShare.href = `https://github.com/Shantnu-singh`; 
+            linkedinShare.href = `https://www.linkedin.com/in/shantnu-singh-70400a22b/`;
+        }
+    </script>
+</body>
+</html>
